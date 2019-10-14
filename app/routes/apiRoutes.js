@@ -2,6 +2,14 @@ const path = require("path");
 const axios = require("axios");
 require("dotenv").config();
 const keys = require("../../keys");
+const sqlite3 = require('sqlite3').verbose();
+// const manifestPath = path.resolve(__dirname, 'world_sql_content_1960d217da17bc78f49d6a119fadb29b.content')
+// let db = new sqlite3.Database(manifestPath, (err) => {
+//     if (err) {
+//         return console.error(err.message);
+//     }
+//     console.log('Connected to the manifest SQlite database.');
+// });
 
 const d2Header = {
     "X-API-key": keys.destiny.d2key
@@ -61,7 +69,23 @@ module.exports = app => {
         axios.get("https://www.bungie.net/Platform/Destiny2/3/Profile/" + ppeID + "/Character/" + ppeWarlock + "/?components=205", { headers: d2Header })
             .then(response => {
                 called = true
-                console.log(response.data.Response.equipment.data.items[0].itemHash)
+                const manifestPath = path.resolve(__dirname, 'world_sql_content_1960d217da17bc78f49d6a119fadb29b.content')
+                let db = new sqlite3.Database(manifestPath, (err) => {
+                    if (err) {
+                        return console.error(err.message);
+                    }
+                    console.log('Connected to the manifest SQlite database.');
+                });
+                db.serialize(() => {
+                    db.each("SELECT json_extract(DestinyRaceDefinition.json, '$') FROM DestinyRaceDefinition, json_tree(DestinyRaceDefinition.json, '$') WHERE json_tree.key = 'hash' AND json_tree.value = 2803282938",
+                        (err, row) => {
+                            if (err) {
+                                console.error(err.message);
+                            }
+                            console.log(row)
+                        });
+                });
+
                 return res.json({
                     status: called,
                     firstItem: response.data.Response.equipment.data.items[0].itemHash
