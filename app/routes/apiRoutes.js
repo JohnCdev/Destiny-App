@@ -54,18 +54,17 @@ module.exports = app => {
                 console.log(err.config);
             });
     });
-}
 
-module.exports = app => {
-    app.get("/api/call2", (req, res) => {
-
+    app.get("/api/items", (req, res) => {
+        let called = false;
         //character info
-        axios.get("https://www.bungie.net/Platform/Destiny2/3/Profile/" + ppeID + "/Character/" + ppeWarlock + "/?components=200", { headers: d2Header })
+        axios.get("https://www.bungie.net/Platform/Destiny2/3/Profile/" + ppeID + "/Character/" + ppeWarlock + "/?components=205", { headers: d2Header })
             .then(response => {
                 called = true
-                console.log(response.data.Response)
+                console.log(response.data.Response.equipment.data.items[0].itemHash)
                 return res.json({
-                    totalPlayTime: response.data.Response.character.data.minutesPlayedTotal
+                    status: called,
+                    firstItem: response.data.Response.equipment.data.items[0].itemHash
                 });
             })
             .catch(err => {
@@ -82,3 +81,5 @@ module.exports = app => {
             });
     });
 }
+
+

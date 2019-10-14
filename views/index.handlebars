@@ -3,11 +3,11 @@
 
     <a class="waves-effect waves-light btn-large" id="playTime"><i class="material-icons left">cloud</i>Get PPE Total
         Play Time</a>
-    <a class="waves-effect waves-light btn-large" id="apiCall"><i class="material-icons left">cloud</i>Get PPE Total
-        Play Time</a>
+    <a class="waves-effect waves-light btn-large" id="apiItems"><i class="material-icons left">cloud</i>Get PPE Equipped Items</a>
     <hr>
 
     <h4>Total Play Time for Character: <span id="totalPlayTime"></span></h4>
+    <h4>First Equipped Item: <span id="firstItem"></span></h4>
 
     {{!-- {{#if called}}
     <h2>Response</h2>
@@ -21,21 +21,17 @@
     <script>
         $("#playTime").on("click", event => {
             event.preventDefault();
-            console.log("clicked")
             $.get("/api/call",
                 data => {
-                    console.log(data.totalPlayTime)
                     $("#totalPlayTime").text(data.totalPlayTime)
                 });
         });
 
-        $("#apiCall").on("click", event => {
+        $("#apiItems").on("click", event => {
             event.preventDefault();
-            console.log("clicked")
-            $.get("/api/call2",
+            $.get("/api/items",
                 data => {
-                    console.log(data.totalPlayTime)
-                    $("#totalPlayTime").text(data.totalPlayTime)
+                    $("#firstItem").text(data.firstItem)
                 });
         });
 
