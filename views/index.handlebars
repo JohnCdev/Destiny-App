@@ -1,0 +1,44 @@
+<div class="container">
+    <h1>Click the button below for API call</h1>
+
+    <a class="waves-effect waves-light btn-large" id="playTime"><i class="material-icons left">cloud</i>Get PPE Total
+        Play Time</a>
+    <a class="waves-effect waves-light btn-large" id="apiCall"><i class="material-icons left">cloud</i>Get PPE Total
+        Play Time</a>
+    <hr>
+
+    <h4>Total Play Time for Character: <span id="totalPlayTime"></span></h4>
+
+    {{!-- {{#if called}}
+    <h2>Response</h2>
+    <ul>
+        <li>{{thing1}}</li>
+    </ul>
+    {{else}}
+    <h3>No response yet</h3>
+    {{/if}} --}}
+
+    <script>
+        $("#playTime").on("click", event => {
+            event.preventDefault();
+            console.log("clicked")
+            $.get("/api/call",
+                data => {
+                    console.log(data.totalPlayTime)
+                    $("#totalPlayTime").text(data.totalPlayTime)
+                });
+        });
+
+        $("#apiCall").on("click", event => {
+            event.preventDefault();
+            console.log("clicked")
+            $.get("/api/call2",
+                data => {
+                    console.log(data.totalPlayTime)
+                    $("#totalPlayTime").text(data.totalPlayTime)
+                });
+        });
+
+    </script>
+
+</div>
