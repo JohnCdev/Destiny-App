@@ -3,13 +3,24 @@ const axios = require("axios");
 require("dotenv").config();
 const keys = require("../../keys");
 const sqlite3 = require('sqlite3').verbose();
-// const manifestPath = path.resolve(__dirname, 'world_sql_content_1960d217da17bc78f49d6a119fadb29b.content')
-// let db = new sqlite3.Database(manifestPath, (err) => {
-//     if (err) {
-//         return console.error(err.message);
-//     }
-//     console.log('Connected to the manifest SQlite database.');
-// });
+const manifestPath = path.resolve(__dirname, 'world_sql_content_1960d217da17bc78f49d6a119fadb29b.content')
+console.log(manifestPath)
+let db = new sqlite3.Database(manifestPath, sqlite3.OPEN_READONLY, (err) => {
+    if (err) {
+        return console.error(err.message);
+    }
+    console.log('Connected to the manifest SQlite database.');
+});
+db.serialize(() => {
+    db.each("SELECT name FROM sqlite_master WHERE type='table'",
+    //db.each("SELECT json FROM DestinyClassDefinition WHERE id = -639573535",
+        (err, row) => {
+            if (err) {
+                console.error(err.message);
+            }
+            console.log(row)
+        });
+});
 
 const d2Header = {
     "X-API-key": keys.destiny.d2key
@@ -70,6 +81,7 @@ module.exports = app => {
             .then(response => {
                 called = true
                 const manifestPath = path.resolve(__dirname, 'world_sql_content_1960d217da17bc78f49d6a119fadb29b.content')
+                console.log(manifestPath)
                 let db = new sqlite3.Database(manifestPath, (err) => {
                     if (err) {
                         return console.error(err.message);
@@ -80,7 +92,7 @@ module.exports = app => {
                     db.each("SELECT json_extract(DestinyRaceDefinition.json, '$') FROM DestinyRaceDefinition, json_tree(DestinyRaceDefinition.json, '$') WHERE json_tree.key = 'hash' AND json_tree.value = 2803282938",
                         (err, row) => {
                             if (err) {
-                                console.error(err.message);
+                                console.error(err.message)
                             }
                             console.log(row)
                         });
