@@ -1,11 +1,9 @@
 const path = require("path");
 const axios = require("axios");
 require("dotenv").config();
-const keys = require("../../keys");
-const fs = require("fs")
+const keys = require("../keys");
 const sqlite3 = require('sqlite3').verbose();
 const manifestPath = path.resolve(__dirname, '../data/db/manifest.content')
-const logPath = path.resolve(__dirname, '../data/logs/')
 const db = new sqlite3.Database(manifestPath, (err) => {
     if (err) {
         return console.error(err.message);
@@ -20,7 +18,7 @@ const ppeID = keys.destiny.ppeID;
 const ppeWarlock = keys.destiny.ppeWarlock;
 
 module.exports = app => {
-    app.get("/api/call", (req, res) => {
+    app.get("/api/character", (req, res) => {
         let called = false;
         //account info
         // axios.get("https://www.bungie.net/Platform/Destiny2/3/Profile/" + ppeID + "/?components=100", {headers: d2Header})

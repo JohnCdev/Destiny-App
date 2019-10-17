@@ -8,8 +8,8 @@ const PORT = process.argv.PORT || 8080;
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-require("./app/routes/apiRoutes")(app);
-require("./app/routes/htmlRoutes")(app);
+require("./routes/apiRoutes")(app);
+require("./routes/htmlRoutes")(app);
 
 app.engine("handlebars", ehb({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");

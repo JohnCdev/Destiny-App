@@ -18,23 +18,4 @@
     <h3>No response yet</h3>
     {{/if}} --}}
 
-    <script>
-        $("#playTime").on("click", event => {
-            event.preventDefault();
-            $.get("/api/call",
-                data => {
-                    $("#totalPlayTime").text(data.totalPlayTime)
-                });
-        });
-
-        $("#apiItems").on("click", event => {
-            event.preventDefault();
-            $.get("/api/items",
-                data => {
-                    $("#firstItem").text(data.firstItem)
-                });
-        });
-
-    </script>
-
 </div>
