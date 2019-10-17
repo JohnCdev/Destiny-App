@@ -2,24 +2,15 @@ const path = require("path");
 const axios = require("axios");
 require("dotenv").config();
 const keys = require("../../keys");
+const fs = require("fs")
 const sqlite3 = require('sqlite3').verbose();
-const manifestPath = path.resolve(__dirname, 'world_sql_content_1960d217da17bc78f49d6a119fadb29b.content')
-console.log(manifestPath)
-let db = new sqlite3.Database(manifestPath, sqlite3.OPEN_READONLY, (err) => {
+const manifestPath = path.resolve(__dirname, '../data/db/manifest.content')
+const logPath = path.resolve(__dirname, '../data/logs/')
+const db = new sqlite3.Database(manifestPath, (err) => {
     if (err) {
         return console.error(err.message);
     }
     console.log('Connected to the manifest SQlite database.');
-});
-db.serialize(() => {
-    db.each("SELECT name FROM sqlite_master WHERE type='table'",
-    //db.each("SELECT json FROM DestinyClassDefinition WHERE id = -639573535",
-        (err, row) => {
-            if (err) {
-                console.error(err.message);
-            }
-            console.log(row)
-        });
 });
 
 const d2Header = {
@@ -79,28 +70,24 @@ module.exports = app => {
         //character info
         axios.get("https://www.bungie.net/Platform/Destiny2/3/Profile/" + ppeID + "/Character/" + ppeWarlock + "/?components=205", { headers: d2Header })
             .then(response => {
+
                 called = true
-                const manifestPath = path.resolve(__dirname, 'world_sql_content_1960d217da17bc78f49d6a119fadb29b.content')
-                console.log(manifestPath)
-                let db = new sqlite3.Database(manifestPath, (err) => {
-                    if (err) {
-                        return console.error(err.message);
-                    }
-                    console.log('Connected to the manifest SQlite database.');
-                });
+                // console.log(response)
+                const firstItemHash = response.data.Response.equipment.data.items[0].itemHash;
+
                 db.serialize(() => {
-                    db.each("SELECT json_extract(DestinyRaceDefinition.json, '$') FROM DestinyRaceDefinition, json_tree(DestinyRaceDefinition.json, '$') WHERE json_tree.key = 'hash' AND json_tree.value = 2803282938",
+                    db.each("SELECT json_extract(DestinyInventoryItemDefinition.json, '$') FROM DestinyInventoryItemDefinition, json_tree(DestinyInventoryItemDefinition.json, '$') WHERE json_tree.key = 'hash' AND json_tree.value = " + firstItemHash,
                         (err, row) => {
                             if (err) {
                                 console.error(err.message)
                             }
-                            console.log(row)
+                            const rowParsed = JSON.parse(row['json_extract(DestinyInventoryItemDefinition.json, \'$\')'])
+                            const itemName = rowParsed.displayProperties.name
+                            return res.json({
+                                status: called,
+                                firstItem: itemName
+                            });
                         });
-                });
-
-                return res.json({
-                    status: called,
-                    firstItem: response.data.Response.equipment.data.items[0].itemHash
                 });
             })
             .catch(err => {
